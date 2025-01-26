@@ -21,6 +21,19 @@ pageextension 50101 "Whse. Worker Activities Ext." extends "Warehouse Worker Act
                         WhseMonitoringEntryList.Run();
                     end;
                 }
+                field("Sensor Error Not Resolved"; Rec."Errors Not Resolved")
+                {
+                    ApplicationArea = Warehouse;
+                    DrillDownPageID = "Whse. Monitoring Entry List";
+                    trigger OnDrillDown()
+                    var
+                        FixedAssetList: Page "Fixed Asset List";
+                    begin
+                        FixedAsset.MarkedOnly(true);
+                        FixedAssetList.SetTableView(FixedAsset);
+                        FixedAssetList.Run();
+                    end;
+                }
             }
         }
     }
@@ -43,11 +56,16 @@ pageextension 50101 "Whse. Worker Activities Ext." extends "Warehouse Worker Act
             WMEntry.SetRange(Location, LocationFilter);
         WMEntry.SetFilter(SystemCreatedAt, '%1..%2', FromDate, ToDate);
         Rec."Items out of Spec." := WMMManagement.GetItemOutOfSpecCount(WMEntry);
+
+        FixedAsset.SetRange("Responsible Employee", UserId());
+        FixedAsset.SetRange("Warehouse Monitoring Sensor", true);
+        Rec."Errors Not Resolved" := WMMManagement.GetSensorErrorNotResolved(FixedAsset);
         Rec.Modify();
     end;
 
     var
         WMEntry: Record "Warehouse Monitoring Entry";
+        FixedAsset: Record "Fixed Asset";
         WMMManagement: Codeunit "WMM Management";
         WMMEnabled: Boolean;
 }

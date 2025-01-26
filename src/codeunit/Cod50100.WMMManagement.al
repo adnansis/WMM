@@ -20,4 +20,21 @@ codeunit 50100 "WMM Management"
 
         exit(TempItem.Count());
     end;
+
+    procedure GetSensorErrorNotResolved(var FixedAsset: Record "Fixed Asset"): Integer
+    var
+        WarehouseSensorStatus: Record "Warehouse Sensor Status";
+    begin
+        if FixedAsset.FindSet() then
+            repeat
+                WarehouseSensorStatus.Reset();
+                WarehouseSensorStatus.SetRange("Serial No.", FixedAsset."Serial No.");
+                WarehouseSensorStatus.SetRange("Operating Resolution", Enum::"Whse. Sensor Operating Res."::"Action needed");
+                if not WarehouseSensorStatus.IsEmpty() then
+                    FixedAsset.Mark(true);
+            until FixedAsset.Next() = 0;
+
+        FixedAsset.MarkedOnly(true);
+        exit(FixedAsset.Count());
+    end;
 }

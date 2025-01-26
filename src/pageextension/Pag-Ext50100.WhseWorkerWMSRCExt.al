@@ -44,6 +44,14 @@ pageextension 50100 "Whse. Worker WMS RC Ext." extends "Whse. Worker WMS Role Ce
                     RunObject = Page "Whse. Monitoring Entry List";
                     ToolTip = 'Executes the Monitoring Data action.';
                 }
+                action(SensorErrors)
+                {
+                    ApplicationArea = Warehouse;
+                    Caption = 'Sensor Errors';
+                    Image = Error;
+                    RunObject = Page "Warehouse Sensor Status List";
+                    ToolTip = 'Executes the Sensor Errors action.';
+                }
             }
         }
     }
